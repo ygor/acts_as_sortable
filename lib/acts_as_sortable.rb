@@ -15,25 +15,28 @@ module ActsAsSortable #:nodoc:
 
   module SingletonMethods
     def sort(*sorts)
-      sorts = [sorts] if sorts.size == 2 && !sorts[0].is_a?(Array)
-      sorts.inject(self) do |scope, sort|
-        key, dir = sort
-        if sortables.empty? || sortables.include?(key.to_sym)
-          if key.to_s.include?('.')
-            assoc, column = key.to_s.split('.')
-            if reflect_on_association(assoc.to_sym)
-              scope.joins(assoc.to_sym).order("`#{assoc.to_s.pluralize}`.`#{column}` #{dir}")
+      if sorts.size.even?
+        sorts.in_groups_of(2).inject(self) do |scope, sort|
+          key, dir = sort
+          if sortables.empty? || sortables.include?(key.to_sym)
+            if key.to_s.include?('.')
+              assoc, column = key.to_s.split('.')
+              if reflect_on_association(assoc.to_sym)
+                scope.joins(assoc.to_sym).order("`#{assoc.to_s.pluralize}`.`#{column}` #{dir}")
+              else
+                scope
+              end
+            elsif scope.respond_to?(key.to_sym) && ![:name, :id].include?(key.to_sym)
+              scope.send(key.to_sym, dir.to_s)
             else
-              scope
+              scope.order("`#{self.name.downcase.pluralize}`.`#{key}` #{dir}")
             end
-          elsif scope.respond_to?(key.to_sym) && ![:name, :id].include?(key.to_sym)
-            scope.send(key.to_sym, dir)
           else
-            scope.order("`#{self.name.downcase.pluralize}`.`#{key}` #{dir}")
+            scope
           end
-        else
-          scope
         end
+      else
+        self
       end
     end
   end

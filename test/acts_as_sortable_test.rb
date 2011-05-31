@@ -19,31 +19,31 @@ class ActsAsSortableTest < ActiveSupport::TestCase
   end
 
   test 'working base case' do
-    assert Book.sort().all
+    assert Book.sort.all
   end
 
   test "return all records" do
-    assert_equal 3, Book.sort().count
+    assert_equal 3, Book.sort.count
   end
     
   test "sort by attribute ascending" do
-    assert_equal [@foundation, @neuromancer, @robots], Book.sort('name', 'ASC').all
+    assert_equal [@foundation, @neuromancer, @robots], Book.sort('name', 'asc').all
   end
  
   test "sort by attribute descending" do
-    assert_equal [@foundation, @neuromancer, @robots].reverse, Book.sort('name', 'DESC').all
+    assert_equal [@foundation, @neuromancer, @robots].reverse, Book.sort('name', 'desc').all
   end
 
   test "sort by association ascending" do
-    assert_equal [@foundation, @robots, @neuromancer], Book.sort('author.name', 'ASC').all
+    assert_equal [@foundation, @robots, @neuromancer], Book.sort('author.name', 'asc').all
   end
 
   test "multiple sorts" do
-    assert_equal [@robots, @foundation, @neuromancer], Book.sort(['author.name', 'ASC'], ['name', 'DESC']).all
+    assert_equal [@robots, @foundation, @neuromancer], Book.sort('author.name', 'asc', 'name', 'DESC').all
   end
 
   test "ignore invalid sort" do
-    assert_equal [@foundation, @neuromancer, @robots], Book.sort(['bla', 'ASC'], ['name', 'ASC']).all
+    assert_equal [@foundation, @neuromancer, @robots], Book.sort('bla', 'asc', 'name', 'asc').all
   end
   
   teardown do
