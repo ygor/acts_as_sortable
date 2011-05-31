@@ -21,5 +21,4 @@ Then use the following to sort:
   @books = Book.sort('name', 'asc').all # sorts all books by name ascending
   
 Or pass multiple sort keys:
-
-@books = Book.sort('author.name', 'asc', 'name', 'desc').all # sorts all books by author name ascending, followed by name descending
+  @books = Book.sort('author.name', 'asc', 'name', 'desc').all # sorts all books by author name ascending, followed by name descending
