@@ -1,0 +1,25 @@
+= ActsAsSortable
+
+ActsAsSortable is a plugin to allow easy sorting of active record models on configured attributes.
+
+== Installation
+
+Run the following command:
+  rails plugin install git://github.com/ygor/acts_as_sortable.git
+
+== Usage
+
+For your model(s) that you want to allow to be sorted, just add the mixin and pass the names of the attributes, class methods or scopes that can be used for sorting:
+  class Book < ActiveRecord::Base
+    # attributes: name, author and genre
+    ...
+    acts_as_sortable :name, :'author.name', :genre
+    ...
+  end
+
+Then use the following to sort:
+  @books = Book.sort('name', 'asc').all # sorts all books by name ascending
+  
+Or pass multiple arrays:
+
+@books = Book.sort(['author.name', 'asc'], ['name', 'desc']).all # sorts all books by author name ascending, followed by name descending
