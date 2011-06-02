@@ -9,12 +9,19 @@ module ActsAsSortable #:nodoc:
     def acts_as_sortable(*sortables)
       class_inheritable_array :sortables
       self.sortables = sortables.map(&:to_sym)
-      extend ActsAsSortable::SingletonMethods
+      extend SingletonMethods
+
+      self.send(:relation).class_eval do
+        extend SingletonMethods
+        def sortables
+          @klass.sortables
+        end
+      end
     end
   end
 
   module SingletonMethods
-    def sort(*sorts)
+    def sorted(*sorts)
       if sorts.size.even?
         sorts.in_groups_of(2).inject(self) do |scope, sort|
           key, dir = sort
@@ -42,4 +49,4 @@ module ActsAsSortable #:nodoc:
   end
 end
 
-ActiveRecord::Base.send(:include, ActsAsSortable)
+ActiveRecord::Base.send :include, ActsAsSortable
