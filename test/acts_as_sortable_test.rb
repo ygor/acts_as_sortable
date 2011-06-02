@@ -47,8 +47,8 @@ class ActsAsSortableTest < ActiveSupport::TestCase
   end
 
   test "sort scoped model" do
-    assert_equal [@foundation, @neuromancer, @robots], Book.where('name != \'\'').sorted('bla', 'asc', 'name', 'asc').all
-  end
+    assert_equal [@robots, @foundation], @asimov.books.where('name != ""').sorted(:name, :desc).all
+  end  
   
   teardown do
     DatabaseCleaner.clean
