@@ -1,24 +1,24 @@
 require 'active_record'
+require 'active_support/core_ext'
 
 module ActsAsSortable #:nodoc:
   extend ActiveSupport::Concern
 
   module ClassMethods
     def acts_as_sortable(*sortables)
-      class_inheritable_array :sortables
-      self.sortables = sortables.map(&:to_sym)
+      class_attribute :sortables
+      self.sortables = (sortables || []).map(&:to_sym)
       
       scope :sorted, lambda {|*sorts|
-        sorts.in_groups_of(2).inject(self.scoped) do |scope, sort|
-          key, dir = sort
-          if sortables.empty? || sortables.include?(key.to_sym)
-            if key.to_s.include?('.')
-              assoc, column = key.to_s.split('.')
-              reflect_on_association(assoc.to_sym) ? scope.joins(assoc.to_sym).order("`#{assoc.to_s.pluralize}`.`#{column}` #{dir}") : scope
-            elsif scope.respond_to?(key.to_sym) && ![:name, :id].include?(key.to_sym)
-              scope.send(key.to_sym, dir.to_s)
+        sorts.inject(self.scoped) do |scope, sort|
+          if sortables.empty? || sortables.include?(sort[:key].to_sym)
+            if sort[:key].to_s.include?('.')
+              assoc, column = sort[:key].to_s.split('.')
+              reflect_on_association(assoc.to_sym) ? scope.joins(assoc.to_sym).order("`#{assoc.to_s.pluralize}`.`#{column}` #{sort[:dir]}") : scope
+            elsif scope.respond_to?(sort[:key].to_sym) && ![:name, :id].include?(sort[:key].to_sym)
+              scope.send(sort[:key].to_sym, sort[:dir].to_s)
             else
-              scope.order("`#{self.name.downcase.pluralize}`.`#{key}` #{dir}")
+              scope.order("`#{self.name.downcase.pluralize}`.`#{sort[:key]}` #{sort[:dir]}")
             end
           else
             scope

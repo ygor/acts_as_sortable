@@ -11,7 +11,6 @@ require File.dirname(__FILE__) + '/models/book'
 require File.dirname(__FILE__) + '/models/author'
 
 require 'test/unit'
-require 'active_support'
 require 'factory_girl'
 Factory.find_definitions
 
