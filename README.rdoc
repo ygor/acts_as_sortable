@@ -18,10 +18,10 @@ For your model(s) that you want to allow to be sorted, just add the mixin and pa
   end
 
 Then use the following to sort:
-  @books = Book.sorted('name', 'asc').all # sorts all books by name ascending
+  @books = Book.sorted(:key => 'name', :dir => 'asc').all # sorts all books by name ascending
   
 Or pass multiple sort keys:
-  @books = Book.sorted('author.name', 'asc', 'name', 'desc').all # sorts all books by author name ascending, followed by name descending
+  @books = Book.sorted({:key => 'author.name', :dir => 'asc'}, {:key => 'name', :dir => 'desc'}).all # sorts all books by author name ascending, followed by name descending
   
 You can also call sorted on a scope model, e.g.
-  @books = Book.where('name != "").joins(:author).sorted('name', 'desc').all # sorts all books by author name ascending, followed by name descending
+  @books = Book.where('name != "").joins(:author).sorted(:key => 'name', :dir => 'desc').all # sorts all books by author name ascending, followed by name descending
