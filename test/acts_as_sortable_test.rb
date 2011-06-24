@@ -22,6 +22,12 @@ class ActsAsSortableTest < ActiveSupport::TestCase
     assert Book.sorted.all
   end
 
+  test 'working empty case' do
+    assert Book.sorted({}).all
+    assert Book.sorted().all
+    assert Book.sorted([]).all
+  end
+
   test "return all records" do
     assert_equal 3, Book.sorted.count
   end
