@@ -23,7 +23,6 @@ class ActsAsSortableTest < ActiveSupport::TestCase
   end
 
   test 'working empty case' do
-    assert Book.sorted({}).all
     assert Book.sorted().all
     assert Book.sorted([]).all
   end
@@ -33,27 +32,30 @@ class ActsAsSortableTest < ActiveSupport::TestCase
   end
     
   test "sort by attribute ascending" do
-    assert_equal [@foundation, @neuromancer, @robots], Book.sorted(:key => 'name', :dir => 'asc').all
+    assert_equal [@foundation, @neuromancer, @robots], Book.sorted(['name', 'asc']).all
+    assert_equal [@foundation, @neuromancer, @robots], Book.sorted('name', 'asc').all
   end
  
   test "sort by attribute descending" do
-    assert_equal [@foundation, @neuromancer, @robots].reverse, Book.sorted(:key => 'name', :dir => 'desc').all
+    assert_equal [@foundation, @neuromancer, @robots].reverse, Book.sorted(['name', 'desc']).all
   end
 
   test "sort by association ascending" do
-    assert_equal [@foundation, @robots, @neuromancer], Book.sorted(:key => 'author.name', :dir => 'asc').all
+    assert_equal [@foundation, @robots, @neuromancer], Book.sorted(['author.name', 'asc']).all
   end
 
   test "multiple sorts" do
-    assert_equal [@robots, @foundation, @neuromancer], Book.sorted({:key => 'author.name', :dir => 'asc'}, {:key => 'name', :dir => 'DESC'}).all
+    assert_equal [@robots, @foundation, @neuromancer], Book.sorted([['author.name','asc'],['name', 'DESC']]).all
+    assert_equal [@robots, @foundation, @neuromancer], Book.sorted(['author.name','asc'],['name', 'DESC']).all
+    assert_equal [@robots, @foundation, @neuromancer], Book.sorted('author.name','asc', 'name', 'DESC').all
   end
 
   test "ignore invalid sort" do
-    assert_equal [@foundation, @neuromancer, @robots], Book.sorted({:key =>'bla', :dir => 'asc'}, {:key => 'name', :dir => 'asc'}).all
+    assert_equal [@foundation, @neuromancer, @robots], Book.sorted([['bla', 'asc'], ['name', 'asc']]).all
   end
 
   test "sort scoped model" do
-    assert_equal [@robots, @foundation], @asimov.books.where('name != ""').sorted(:key => :name, :dir => :desc).all
+    assert_equal [@robots, @foundation], @asimov.books.where('name != ""').sorted([:name, :desc]).all
   end  
   
   teardown do
